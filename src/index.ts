@@ -1,15 +1,22 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
+import express from "express";
+import mongoose from "mongoose";
+import authRouter from "./routes/auth.js";
+import contentRouter from "./routes/content.js";
+import brainRouter from "./routes/brain.js";
+import { config } from "./config.js";
+
+await mongoose
+  .connect(config.mongoUrl)
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log("Connection error", err));
 
 const app = express();
+app.use(express.json());
 
-app.post("api/v1/signup", (req, res) => {});
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/content", contentRouter);
+app.use("/api/v1/brain", brainRouter);
 
-app.post("api/v1/signin", (req, res) => {});
-
-app.post("api/v1/content", (req, res) => {});
-
-app.post("api/v1/brain/share", (req, res) => {});
-
-app.post("api/v1/brain/:shareLink", (req, res) => {});
+app.listen(config.port, () => {
+  console.log(`Server running on PORT: ${config.port}`);
+});
