@@ -32,3 +32,5 @@ export const userMiddleware = (
     return res.status(403).json({ message: "Unauthorized" });
   }
 };
+
+export type { AuthRequest };
