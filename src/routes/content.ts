@@ -81,4 +81,36 @@ contentRouter.get("/content", userMiddleware, async (req:AuthRequest, res:Respon
   }
 });
 
+contentRouter.delete("/content/:id", userMiddleware, async (req:AuthRequest, res:Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const { id } = req.params;
+
+    if(!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid content ID format" });
+    }
+
+    const deletedContent = await ContentModel.findOneAndDelete({ _id:id, userId:req.userId });
+
+    if (!deletedContent) {
+      return res.status(404).json({ message: "Content not found" });
+    }
+
+    return res.status(200).json({
+      message: "Content deleted successfully",
+      data: {
+        id: deletedContent._id,
+        title: deletedContent.title
+      }
+    });
+
+  } catch (err) {
+    console.error("Error deleting content: ", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 export default contentRouter;
