@@ -1,0 +1,61 @@
+import { Router, type Response } from "express";
+import { userMiddleware, type AuthRequest } from "../middleware.js";
+import { ContentModel, TagModel } from "../db.js";
+import { z } from "zod";
+
+const contentRouter = Router();
+const contentTypes = ['images', 'video', 'article'] as const;
+
+const contentSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  link: z.url(),
+  type: z.enum(contentTypes),
+  tags: z.array(z.string()).optional().default([]),
+});
+
+contentRouter.post(
+  "/content",
+  userMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const parseResult = contentSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        return res.status(400).json({
+          errors: parseResult.error.issues.map((issues) => issues.message),
+        });
+      }
+
+      const { title, link, type, tags } = parseResult.data;
+
+      if (!req.userId) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const tagIds = [];
+
+      for (const tagTitle of tags) {
+        let tag = await TagModel.findOne({ title:tagTitle });
+
+        if (!tag) {
+          tag = await TagModel.create({ title: tagTitle });
+        }
+        tagIds.push(tag._id);
+      }
+
+      const newContent = await ContentModel.create({
+        title, // Include the title field!
+        link,
+        type,
+        userId: req.userId,
+        tags: [],
+      });
+
+      return res.status(200).json({ message: "Contents Added Successfully", data:newContent });
+    } catch (err) {
+      console.error("Error adding content:", err);
+      return res.status(500).json({ message: "Server Error " });
+    }
+  }
+);
+
+export default contentRouter;
