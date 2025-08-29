@@ -47,7 +47,7 @@ contentRouter.post(
         link,
         type,
         userId: req.userId,
-        tags: [],
+        tags: tagIds,
       });
 
       return res.status(200).json({ message: "Contents Added Successfully", data:newContent });
@@ -57,5 +57,28 @@ contentRouter.post(
     }
   }
 );
+
+contentRouter.get("/content", userMiddleware, async (req:AuthRequest, res:Response) => {
+  try {
+    if (!req.userId) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+    const content = await ContentModel.find({ userId: req.userId })
+      .populate("userId", "username")
+      .populate("tags","title")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({ 
+      message: "Content retrieved successfully",
+      data: content,
+      count: content.length
+    });
+
+  } catch (err) {
+    console.error("Errir retrieving content: ", err);
+    res.status(500).json({ message: "Internal Server Error"});
+  }
+});
 
 export default contentRouter;
