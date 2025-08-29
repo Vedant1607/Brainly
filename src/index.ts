@@ -14,8 +14,8 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/content", contentRouter);
-app.use("/api/v1/brain", brainRouter);
+app.use("/api/v1", contentRouter);
+app.use("/api/v1", brainRouter);
 
 app.listen(config.port, () => {
   console.log(`Server running on PORT: ${config.port}`);
