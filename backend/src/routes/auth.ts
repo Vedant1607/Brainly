@@ -35,7 +35,7 @@ authRouter.post("/signup", async (req, res) => {
       return res.status(411).json({ errors: result.error.issues.map(issue => issue.message) });
     }
 
-    const { username, password } = req.body;
+    const { username, password } = result.data;
 
     const existingUser = await UserModel.findOne({ username });
     if (existingUser) {
