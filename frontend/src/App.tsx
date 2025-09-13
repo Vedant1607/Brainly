@@ -1,15 +1,19 @@
+import { Dashboard } from "./pages/Dashboard";
 import "./App.css";
-import Button from "./components/Button";
-import { PlusIcon } from "./icons/PlusIcon";
-import { ShareIcon } from "./icons/ShareIcon";
+import { Signup } from "./pages/Signup";
+import { Signin } from "./pages/Signin";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 
-function App() {
+const App = () => {
   return (
-    <div>
-      <Button variant="secondary" text="Share Brain" startIcon={<ShareIcon/>}></Button>
-      <Button variant="primary" text="Add Content" startIcon={<PlusIcon/>}></Button>
-    </div>
-  );
+    <BrowserRouter>
+    <Routes>
+      <Route path="/signup" element={<Signup/>}/>
+      <Route path="/signin" element={<Signin/>}/>
+      <Route path="/dashboard" element={<Dashboard/>}/>
+    </Routes>
+    </BrowserRouter>
+  )
 }
 
 export default App;
