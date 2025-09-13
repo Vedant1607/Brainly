@@ -4,13 +4,15 @@ import authRouter from "./routes/auth.js";
 import contentRouter from "./routes/content.js";
 import brainRouter from "./routes/brain.js";
 import { config } from "./config.js";
+import cors from 'cors';
 
 await mongoose
-  .connect(config.mongoUrl)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("Connection error", err));
+.connect(config.mongoUrl)
+.then(() => console.log("MongoDB connected"))
+.catch((err) => console.log("Connection error", err));
 
 const app = express();
+app.use(cors);
 app.use(express.json());
 
 app.use("/api/v1/auth", authRouter);
