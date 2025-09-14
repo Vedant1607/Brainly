@@ -12,7 +12,7 @@ await mongoose
 .catch((err) => console.log("Connection error", err));
 
 const app = express();
-app.use(cors);
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/v1/auth", authRouter);
